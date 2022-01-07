@@ -12,16 +12,17 @@ from pygrok import Grok
 log = logging.getLogger(__name__)
 NGINX_LOG_FILEPATH = os.environ['NGINX_LOG_FILEPATH']
 SUBNETS = os.environ["SUBNETS"].split(',')
+LOGLEVEL = os.environ['LOGLEVEL']
 
 
-def setup_logging(loglevel=20):
+def setup_logging():
     """Setup basic logging
 
     Args:
       loglevel (int): minimum loglevel for emitting messages
     """
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    logging.basicConfig(level=loglevel, stream=sys.stdout,
+    logging.basicConfig(level=LOGLEVEL, stream=sys.stdout,
                         format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
 
 
@@ -125,7 +126,7 @@ def output_results(ipaddress_occurrences_dict,
     
 
 def main():
-    setup_logging(loglevel=20)
+    setup_logging()
     log.info("Begin processing nginx logs...")
     ipaddresses_details_dict = load_nginx_logs_to_dict(filepath=NGINX_LOG_FILEPATH)
     ipaddress_occurrences_dict = get_ipaddress_occurrences(ipaddresses_details_dict)
