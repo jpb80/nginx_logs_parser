@@ -10,10 +10,8 @@ import sys
 from pygrok import Grok
 
 log = logging.getLogger(__name__)
-#NGINX_LOG_FILEPATH = os.environ('NGINX_LOG_FILEPATH')
-#SUBNETS = os.environ("SUBNETS").split(',')
-NGINX_LOG_FILEPATH = "./nginx_logs/nginx.log"
-SUBNETS = "108.162.0.0/16,212.129.32.128/25,173.245.56.0/23".split(',')
+NGINX_LOG_FILEPATH = os.environ['NGINX_LOG_FILEPATH']
+SUBNETS = os.environ["SUBNETS"].split(',')
 
 
 def setup_logging(loglevel=20):
@@ -51,6 +49,8 @@ def load_nginx_logs_to_dict(filepath):
                     results[parsed_log['remote_addr']] = [parsed_log]
     except IOError as io:
         log.exception("Error reading file has occurred: %s", io)
+    except Exception as ex:
+        log.exception("Failed to load and parse logs.")
     return results
 
 
