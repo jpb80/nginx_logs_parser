@@ -28,9 +28,13 @@ def setup_logging():
 
 def load_nginx_logs_to_dict(filepath):
     """
+    Load each line from the nginx log file. Parse that line with Grok pattern 
+    matching into a dict object. Group together the nginx objects by remote
+    ipaddress. 
     {
         '123.123.123.4': [{'remote_addr':'123...', 'verb':'GET'}]
     }
+    Return: dictionary
     """
     log.info("Loading nginx logs into dictionary.")
     results = {}
@@ -57,6 +61,8 @@ def load_nginx_logs_to_dict(filepath):
 
 def parse_nginx_logs(log_line):
     """
+    Use Grok pattern matching to match column fields to keys in a dictionary.
+    Return: dictionary
     """
     log.debug("Log line: %s", log_line)
     pattern = "%{IPORHOST:remote_addr} - - \[%{HTTPDATE:time_local}\] \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:version})?|-)\" %{NUMBER:status} (-|%{INT:body_bytes_sent}) \"-\" \"%{GREEDYDATA:referrer}\""
@@ -71,6 +77,8 @@ def parse_nginx_logs(log_line):
 
 def get_ipaddress_occurrences(ipaddresses_details_dict):
     """
+    Use the dictionary keys of unique ipaddresses to determine number of
+    occurrences. 
     """
     log.info("Get count of unqiue ipaddresses.")
     log.debug("ipaddresses_details_dict %s", ipaddresses_details_dict)
@@ -87,6 +95,9 @@ def get_ipaddress_occurrences(ipaddresses_details_dict):
 
 def get_distinct_ipaddress_by_subnets(ipaddress_occurrences_dict, subnets):
     """
+    Use the unique ipaddresses to determine if they belong to the set of
+    subnets.
+    Return: dictionary of subnet to number of ip addresses that belonged to it.
     """
     log.info("Get distinct ipaddress that belong to subnets: %s", subnets)
     results = {}
@@ -112,6 +123,7 @@ def get_distinct_ipaddress_by_subnets(ipaddress_occurrences_dict, subnets):
 def output_results(ipaddress_occurrences_dict,
                    distinct_ipaddresses_by_subnet_dict):
     """
+    Output readable results to stdout and as a dictionary object.
     """
     results = {'buckets': {},
                'remote_address_occurrences': {}}
